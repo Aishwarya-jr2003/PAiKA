@@ -1,0 +1,19 @@
+Favorite Recipes
+
+Spaghetti Carbonara:
+Ingredients: Spaghetti, eggs, parmesan cheese, bacon, black pepper
+Instructions: Cook pasta. Fry bacon. Mix eggs and cheese. Combine all with 
+pasta while hot. The heat cooks the eggs. Add pepper to taste.
+Time: 20 minutes
+
+Chicken Tikka Masala:
+Ingredients: Chicken, yogurt, tomatoes, cream, garam masala, ginger, garlic
+Instructions: Marinate chicken in yogurt and spices. Grill chicken. Make sauce 
+with tomatoes, cream, and spices. Combine and simmer.
+Time: 45 minutes
+
+Chocolate Chip Cookies:
+Ingredients: Flour, butter, sugar, brown sugar, eggs, vanilla, chocolate chips
+Instructions: Cream butter and sugars. Add eggs and vanilla. Mix in flour. 
+Fold in chocolate chips. Bake at 350°F for 10-12 minutes.
+Yield: 24 cookies

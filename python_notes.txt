@@ -1,0 +1,20 @@
+Python Programming Notes
+
+Python is a high-level programming language created by Guido van Rossum in 1991.
+It emphasizes code readability and uses significant indentation.
+
+Key Features:
+- Easy to learn and read
+- Extensive standard library
+- Supports multiple programming paradigms
+- Dynamic typing and automatic memory management
+- Large ecosystem of third-party packages via pip
+
+Popular Uses:
+- Web development (Django, Flask)
+- Data science and machine learning
+- Automation and scripting
+- Scientific computing
+
+Python versions: Python 2 is deprecated. Python 3 is the current standard.
+The latest stable version is Python 3.12 as of 2024.

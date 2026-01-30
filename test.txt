@@ -1,0 +1,28 @@
+PAiKA Project Documentation
+
+PAiKA stands for Personal AI Knowledge Assistant. It is an intelligent system 
+designed to help users manage and query their personal knowledge base.
+
+Key Features:
+- Document ingestion and processing
+- Natural language question answering
+- Vector database for semantic search
+- Privacy-focused local storage
+- Web interface for easy interaction
+
+Technology Stack:
+PAiKA is built using Python 3.12 as the primary programming language. It uses 
+Groq API for natural language understanding. The vector database 
+component uses ChromaDB for efficient similarity search. The web interface is built with Streamlit.
+
+Development Timeline:
+The project is being developed over 5 weeks, with approximately 1.5 hours of 
+work per day. Week 1 focuses on basic functionality. Week 2 adds vector 
+database support. Week 3 implements the web interface. Week 4 adds advanced 
+features. Week 5 is dedicated to polish and deployment.
+
+Privacy and Security:
+PAiKA prioritizes user privacy. All documents are stored locally on the user's 
+machine. API calls are made securely with encrypted connections. No user data 
+is shared with third parties except for the necessary API calls to OpenAI.
+

@@ -1,0 +1,24 @@
+Artificial Intelligence Concepts
+
+Machine Learning:
+Machine learning is a subset of AI where systems learn from data without being 
+explicitly programmed. Common types include supervised learning, unsupervised 
+learning, and reinforcement learning.
+
+Neural Networks:
+Inspired by biological neurons, neural networks consist of layers of 
+interconnected nodes. Deep learning uses neural networks with many layers.
+
+Large Language Models (LLMs):
+LLMs like GPT, Claude, and Llama are trained on massive text datasets to 
+understand and generate human-like text. They use transformer architecture 
+and attention mechanisms.
+
+RAG (Retrieval-Augmented Generation):
+RAG combines information retrieval with text generation. It retrieves relevant 
+documents from a database and uses them as context for the LLM to generate 
+accurate, grounded answers.
+
+Vector Databases:
+Store embeddings (numerical representations of text) for semantic similarity 
+search. Examples include ChromaDB, Pinecone, and Weaviate.

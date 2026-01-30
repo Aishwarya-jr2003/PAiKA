@@ -1,0 +1,23 @@
+Project Management Best Practices
+
+Agile Methodology:
+Agile is an iterative approach to project management. Work is divided into 
+sprints (usually 2 weeks). Daily standup meetings keep team aligned.
+
+Key Ceremonies:
+- Sprint Planning: Define sprint goals and tasks
+- Daily Standups: 15-minute sync meetings
+- Sprint Review: Demo completed work
+- Retrospective: Discuss improvements
+
+Kanban Boards:
+Visual workflow management using columns like "To Do", "In Progress", "Done".
+Helps team see work status at a glance.
+
+Communication Tools:
+Popular tools include Slack for messaging, Jira for task tracking, 
+Confluence for documentation, and Zoom for video calls.
+
+Time Management:
+Use techniques like Pomodoro (25-minute focused work sessions) and time 
+blocking to maximize productivity.

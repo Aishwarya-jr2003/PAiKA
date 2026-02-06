@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 import os
 from pathlib import Path
 from datetime import datetime
-from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from sentence_transformers import CrossEncoder
 import time
 import json

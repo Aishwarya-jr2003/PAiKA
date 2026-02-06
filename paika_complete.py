@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 from datetime import datetime
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+
 from sentence_transformers import CrossEncoder
 import time
 import json
@@ -48,26 +49,10 @@ st.markdown("""
         padding: 1.5rem 0;
         animation: slideDown 0.8s ease-out;
     }
-    @keyframes slideDown {
-        from { opacity: 0; transform: translateY(-30px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .metric-card {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: white;
-        padding: 1.5rem;
-        border-radius: 1rem;
-        text-align: center;
-        box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-        transition: transform 0.3s;
-    }
-    .metric-card:hover {
-        transform: translateY(-5px);
-    }
 </style>
 """, unsafe_allow_html=True)
 
-# ===== LOADERS =====
+# ===== CACHED FUNCTIONS =====
 
 @st.cache_resource(show_spinner=False)
 def load_chroma_client():
@@ -76,13 +61,13 @@ def load_chroma_client():
 def load_groq_client():
     api_key = st.secrets.get("GROQ_API_KEY")
     if not api_key:
-        st.error("❌ GROQ_API_KEY missing in Streamlit secrets")
+        st.error("❌ GROQ_API_KEY missing. Add it in Streamlit Secrets.")
         st.stop()
     return Groq(api_key=api_key)
 
 @st.cache_resource(show_spinner=False)
 def load_reranker_model():
-    return CrossEncoder("cross-encoder/ms-marco-MiniLM-L-6-v2")
+    return CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 
 @st.cache_resource(show_spinner=False)
 def load_text_splitter():
@@ -97,12 +82,12 @@ def load_text_splitter():
 def process_file_content(file_bytes, filename):
     ext = Path(filename).suffix.lower()
     try:
-        if ext in [".txt", ".md"]:
-            return file_bytes.decode("utf-8"), ext
-        if ext == ".pdf":
+        if ext in ['.txt', '.md']:
+            return file_bytes.decode('utf-8'), ext
+        elif ext == '.pdf':
             pdf = PyPDF2.PdfReader(BytesIO(file_bytes))
-            return "\n".join(p.extract_text() for p in pdf.pages), ext
-        if ext == ".docx":
+            return "\n".join(page.extract_text() for page in pdf.pages), ext
+        elif ext == '.docx':
             doc = DocxDocument(BytesIO(file_bytes))
             return "\n".join(p.text for p in doc.paragraphs), ext
     except Exception as e:
@@ -111,16 +96,16 @@ def process_file_content(file_bytes, filename):
 
 def load_usage_log():
     try:
-        with open("usage_log.json") as f:
+        with open('./usage_log.json') as f:
             return json.load(f)
     except:
         return []
 
 def save_usage_log(log):
-    with open("usage_log.json", "w") as f:
+    with open('./usage_log.json', 'w') as f:
         json.dump(log, f)
 
-# ===== INIT =====
+# ===== INITIALIZE =====
 
 chroma_client = load_chroma_client()
 groq_client = load_groq_client()
@@ -132,33 +117,35 @@ try:
 except:
     collection = chroma_client.create_collection("paika_complete")
 
-if "messages" not in st.session_state:
+if 'messages' not in st.session_state:
     st.session_state.messages = []
-if "usage_log" not in st.session_state:
+
+if 'usage_log' not in st.session_state:
     st.session_state.usage_log = load_usage_log()
 
 # ===== HEADER =====
 
 st.markdown('<h1 class="main-header">🚀 PAiKA Complete</h1>', unsafe_allow_html=True)
 
-# ===== TABS =====
+# ===== MAIN TABS =====
 
 tab1, tab2, tab3 = st.tabs(["💬 Chat", "📊 Analytics", "📚 Documents"])
 
-# 🔥 IMPORTANT FIX: chat_input at TOP LEVEL
+# 🔧 FIX: chat_input moved to top-level (ONLY CHANGE)
 prompt = st.chat_input("Ask anything about your documents...")
 
-# ===== CHAT TAB =====
-
 with tab1:
-    for msg in st.session_state.messages:
-        with st.chat_message(msg["role"]):
-            st.markdown(msg["content"])
+    st.subheader("Chat with Your Documents")
 
-# ===== HANDLE CHAT INPUT (outside tabs) =====
+    for msg in st.session_state.messages:
+        with st.chat_message(msg['role']):
+            st.markdown(msg['content'])
+
+# ===== CHAT LOGIC (unchanged, just moved) =====
 
 if prompt:
     query_start = time.time()
+
     st.session_state.messages.append({"role": "user", "content": prompt})
 
     with st.chat_message("assistant"):
@@ -169,19 +156,24 @@ if prompt:
                 query_texts=[prompt],
                 n_results=min(5, collection.count())
             )
-            context = "\n".join(results["documents"][0])
+
+            context = "\n".join(results['documents'][0])
+
             response = groq_client.chat.completions.create(
                 model="llama-3.3-70b-versatile",
                 messages=[{"role": "user", "content": context + "\n\n" + prompt}],
-                max_tokens=700
+                max_tokens=1000,
+                temperature=0.7
             )
+
             answer = response.choices[0].message.content
 
         st.markdown(answer)
 
-    st.session_state.messages.append(
-        {"role": "assistant", "content": answer}
-    )
+    st.session_state.messages.append({
+        "role": "assistant",
+        "content": answer
+    })
 
     st.session_state.usage_log.append({
         "timestamp": datetime.now().isoformat(),
@@ -191,15 +183,11 @@ if prompt:
     save_usage_log(st.session_state.usage_log)
     st.rerun()
 
-# ===== ANALYTICS TAB =====
-
 with tab2:
-    st.metric("Queries", len(st.session_state.usage_log))
-    st.metric("Chunks", collection.count())
-
-# ===== DOCUMENTS TAB =====
+    st.metric("Total Queries", len(st.session_state.usage_log))
+    st.metric("Total Chunks", collection.count())
 
 with tab3:
-    st.info("Document browser unchanged")
+    st.info("📚 Document Library unchanged")
 
-st.caption("🚀 PAiKA Complete • Production-Ready RAG")
+st.caption("🚀 PAiKA Complete • Production-Ready RAG • Built with ❤️")

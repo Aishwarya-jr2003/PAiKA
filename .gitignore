@@ -1,6 +1,21 @@
+# Virtual environment
 venv/
-.env
+.env/
+
+# Python cache
 __pycache__/
 *.pyc
-data/documents/
-embeddings/
+
+# Chroma / Vector DBs
+paika_*_db/
+*.sqlite3
+*.bin
+*.pickle
+
+# Logs & runtime data
+*.log
+usage_log.json
+
+# OS junk
+.DS_Store
+Thumbs.db

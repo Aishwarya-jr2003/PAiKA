@@ -376,6 +376,11 @@ with st.sidebar:
 
 # ===== MAIN CONTENT =====
 
+# ===== MAIN CONTENT =====
+
+# 🔹 Chat input MUST be at top-level (Streamlit rule)
+prompt = st.chat_input("Ask anything about your documents...")
+
 # Tabs
 tab1, tab2, tab3 = st.tabs(["💬 Chat", "📊 Analytics", "📚 Documents"])
 
@@ -397,8 +402,8 @@ with tab1:
                     with col3:
                         st.metric("Reranked", "✓" if msg['metadata'].get('reranked') else "✗")
     
-    # Chat input
-    if prompt := st.chat_input("Ask anything about your documents..."):
+    # Chat logic (NO st.chat_input here)
+    if prompt:
         query_start = time.time()
         
         st.session_state.messages.append({"role": "user", "content": prompt})
@@ -428,7 +433,10 @@ with tab1:
                                 candidates = [{
                                     'content': doc,
                                     'metadata': meta
-                                } for doc, meta in zip(results['documents'][0], results['metadatas'][0])]
+                                } for doc, meta in zip(
+                                    results['documents'][0],
+                                    results['metadatas'][0]
+                                )]
                                 
                                 pairs = [(prompt, c['content']) for c in candidates]
                                 scores = reranker.predict(pairs)
@@ -438,7 +446,6 @@ with tab1:
                                 
                                 candidates.sort(key=lambda x: x['score'], reverse=True)
                                 top_results = candidates[:n_results]
-                                
                                 rerank_time = time.time() - rerank_start
                             else:
                                 top_results = [{
@@ -466,7 +473,7 @@ Question: {prompt}
 Provide a helpful and accurate answer:"""
                             
                             if use_streaming:
-                                message_placeholder = st.empty()
+                                placeholder = st.empty()
                                 full_response = ""
                                 
                                 stream = groq_client.chat.completions.create(
@@ -480,9 +487,9 @@ Provide a helpful and accurate answer:"""
                                 for chunk in stream:
                                     if chunk.choices[0].delta.content:
                                         full_response += chunk.choices[0].delta.content
-                                        message_placeholder.markdown(full_response + "▌")
+                                        placeholder.markdown(full_response + "▌")
                                 
-                                message_placeholder.markdown(full_response)
+                                placeholder.markdown(full_response)
                                 answer = full_response
                             else:
                                 response = groq_client.chat.completions.create(
@@ -507,26 +514,14 @@ Provide a helpful and accurate answer:"""
                             }
                             
                             success = True
-                            
-                            with st.expander("⏱️ Performance"):
-                                col1, col2, col3, col4 = st.columns(4)
-                                with col1:
-                                    st.metric("Search", f"{search_time:.2f}s")
-                                with col2:
-                                    st.metric("Rerank", f"{rerank_time:.2f}s" if use_reranking else "Off")
-                                with col3:
-                                    st.metric("Generate", f"{gen_time:.2f}s")
-                                with col4:
-                                    st.metric("Total", f"{total_time:.2f}s")
                         else:
                             answer = "No relevant information found."
                             metadata = {}
                             success = False
                 
                 except Exception as e:
-                    logger.error(f"Query error: {e}")
                     logger.error(traceback.format_exc())
-                    answer = f"❌ Error: {str(e)}"
+                    answer = f"❌ Error: {e}"
                     metadata = {}
                     success = False
                     st.error(answer)
@@ -537,7 +532,6 @@ Provide a helpful and accurate answer:"""
             "metadata": metadata
         })
         
-        # Log usage
         st.session_state.usage_log.append({
             'timestamp': datetime.now().isoformat(),
             'query': prompt,
@@ -546,14 +540,14 @@ Provide a helpful and accurate answer:"""
         })
         save_usage_log(st.session_state.usage_log)
         
-        # Update stats
         st.session_state.performance_stats['total_queries'] += 1
         prev_avg = st.session_state.performance_stats['avg_response_time']
         n = st.session_state.performance_stats['total_queries']
         st.session_state.performance_stats['avg_response_time'] = \
-            (prev_avg * (n-1) + metadata.get('response_time', 0)) / n
+            (prev_avg * (n - 1) + metadata.get('response_time', 0)) / n
         
         st.rerun()
+
 
 with tab2:
     st.subheader("📊 System Analytics")

@@ -100,13 +100,23 @@ st.markdown("""
 def load_chroma_client():
     return chromadb.PersistentClient(path="./paika_complete_db")
 
-@st.cache_resource(show_spinner=False)
+@st.cache_resource
 def load_groq_client():
-    api_key = os.getenv("GROQ_API_KEY")
-    if not api_key:
-        st.error("❌ GROQ_API_KEY not found!")
+    try:
+        api_key = st.secrets["GROQ_API_KEY"]
+    except KeyError:
+        st.error("❌ GROQ_API_KEY not found in Streamlit secrets")
         st.stop()
-    return Groq(api_key=api_key)
+
+    if not api_key or not isinstance(api_key, str):
+        st.error("❌ Invalid GROQ_API_KEY")
+        st.stop()
+
+    # ✅ Groq SDK expects key in environment
+    os.environ["GROQ_API_KEY"] = api_key
+
+    # ✅ Instantiate WITHOUT arguments
+    return Groq()
 
 @st.cache_resource(show_spinner=False)
 def load_reranker_model():

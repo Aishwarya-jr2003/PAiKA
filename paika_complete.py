@@ -103,7 +103,6 @@ def load_chroma_client():
 import streamlit as st
 from groq import Groq
 
-@st.cache_resource
 def load_groq_client():
     api_key = st.secrets.get("GROQ_API_KEY")
 
@@ -111,7 +110,6 @@ def load_groq_client():
         st.error("❌ GROQ_API_KEY missing. Add it in Streamlit Secrets.")
         st.stop()
 
-    # ✅ Works correctly with groq==0.5.0
     return Groq(api_key=api_key)
 
 
